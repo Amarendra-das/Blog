@@ -15,3 +15,7 @@ function checkForAuthenticationCookie (cookieName){
      next();
    }
 }
+
+module.exports ={
+    checkForAuthenticationCookie,
+}
