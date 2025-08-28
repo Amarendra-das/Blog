@@ -29,7 +29,7 @@ router.post("/",upload.single("coverImage") ,(req,res)=>{
         body,
         title,
         createdBy: req.user._id,
-        coverImageURL:`uploads/${req.file.filename}`
+        coverImageURL:`/uploads/${req.file.filename}`
     })
     return res.redirect("/");
 })
