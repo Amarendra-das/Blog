@@ -23,15 +23,15 @@ router.get("/add-new",(req,res)=>{
         user:req.user,
     })
 })
-router.post("/",upload.single("coverImage") ,(req,res)=>{
+router.post("/",upload.single("coverImage") ,async(req,res)=>{
     const {title,body} =req.body;
-    Blog.create({
+  const blog= await  Blog.create({
         body,
         title,
         createdBy: req.user._id,
-        coverImageURL:`/uploads/${req.file.filename}`
+        coverImageURL:`/uploads/${req.file.filename}`,
     })
-    return res.redirect("/");
+    return res.redirect(`/blog/${blog._id}`);
 })
 
 module.exports = router;
