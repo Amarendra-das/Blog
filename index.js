@@ -1,5 +1,7 @@
 const express=require('express');
 const path =require('path');
+
+const Blog = require("./models/blog")
 const userRoute = require("./routes/user");
 const blogRoute = require("./routes/blog");
 const app = express();
@@ -18,9 +20,11 @@ app.use(express.urlencoded({extended:false}));
 app.use(cookieParser());
 app.use(checkForAuthenticationCookie("token"))
 
-app.get("/",(req,res) =>{
+app.get("/",async(req,res) =>{
+    const allBlog = await Blog.find({});
  res.render("home",{
     user: req.user,
+    blogs:allBlog,
  });
 })
 
