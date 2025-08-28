@@ -3,9 +3,11 @@ const multer = require("multer")
 const router = Router();
 const path =require("path")
 
+const Blog =require("../models/blog")
+
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, path.resolve(`./public/uploads/${req.user._id}`))
+    cb(null, path.resolve(`./public/image/uploads/`))
   },
   filename: function (req, file, cb) {
    const fileName = `${Date.now()}-${file.originalname}`;
@@ -14,15 +16,21 @@ const storage = multer.diskStorage({
 });
 
 
-const upload = multer({ storage:  storage  })
+const upload = multer({ storage:  storage  });
 
 router.get("/add-new",(req,res)=>{
     return res.render("addBlog",{
         user:req.user,
     })
 })
-router.post("/",(req,res)=>{
-
+router.post("/",upload.single("coverImage") ,(req,res)=>{
+    const {title,body} =req.body;
+    Blog.create({
+        body,
+        title,
+        createdBy: req.user._id,
+        coverImageURL:`uploads/${req.file.filename}`
+    })
     return res.redirect("/");
 })
 
