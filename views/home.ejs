@@ -7,14 +7,15 @@
 <body>
     <%- include('./partials/nav') %>
     <div class="container mt-3">
-       <div class="card" style="width: 18rem;">
-  <img src="..." class="card-img-top" alt="...">
+       <% blogs.forEach(blog => { %>
+        <div class="card" style="width: 18rem;">
+  <img src="<%= blog.coverImageURL %>" class="card-img-top" >
   <div class="card-body">
-    <h5 class="card-title">Card title</h5>
-    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card’s content.</p>
-    <a href="#" class="btn btn-primary">Go somewhere</a>
+    <h5 class="card-title"><%= blog.title %></h5>
+    <a href="/blog/"<%= blog._id %> class="btn btn-primary">View</a>
   </div>
 </div>
+       <% }) %>
     </div>
     <%- include('./partials/script') %>
 </body>
