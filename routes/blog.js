@@ -18,12 +18,6 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-router.get("/", async (req, res) => {
-    const allBlogs = await Blog.find({});
-    return res.render("home", {
-        blogs: allBlogs,
-    });
-});
 
 router.get("/add-new", (req, res) => {
     return res.render("addBlog");
@@ -80,7 +74,7 @@ router.post("/edit/:id", async (req, res) => {
 
 router.post("/delete/:id", async (req, res) => {
     await Blog.findByIdAndDelete(req.params.id);
-    return res.redirect("/blog");
+    return res.redirect("/");
 });
 
 module.exports = router;
