@@ -4,11 +4,11 @@ const router = Router();
 const path = require("path");
 
 const Blog = require("../models/blog");
-const Comment = require("../models/comment"); // You'll need this for comments
+const Comment = require("../models/comment");
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, path.resolve(`./public/image/uploads/`)); // Simplified path
+        cb(null, path.resolve(`./public/image/uploads/`));
     },
     filename: function (req, file, cb) {
         const fileName = `${Date.now()}-${file.originalname}`;
@@ -18,11 +18,18 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-router.get("/add-new", (req, res) => {
-    return res.render("addBlog"); // 'user' is globally available via res.locals now
+// ✅ ADD THIS ROUTE HANDLER
+router.get("/", async (req, res) => {
+    const allBlogs = await Blog.find({});
+    return res.render("home", {
+        blogs: allBlogs,
+    });
 });
 
-// This is the missing route handler
+router.get("/add-new", (req, res) => {
+    return res.render("addBlog");
+});
+
 router.get("/:id", async (req, res) => {
     const blog = await Blog.findById(req.params.id).populate("createdBy");
     const comments = await Comment.find({ blogId: req.params.id }).populate("createdBy");
@@ -42,6 +49,15 @@ router.post("/", upload.single("coverImage"), async (req, res) => {
         coverImageURL: `/image/uploads/${req.file.filename}`,
     });
     return res.redirect(`/blog/${blog._id}`);
+});
+
+router.post("/comment/:blogId", async (req, res) => {
+    await Comment.create({
+        content: req.body.content,
+        blogId: req.params.blogId,
+        createdBy: req.user._id,
+    });
+    return res.redirect(`/blog/${req.params.blogId}`);
 });
 
 module.exports = router;
