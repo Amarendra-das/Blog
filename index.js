@@ -1,34 +1,43 @@
-const express=require('express');
-const path =require('path');
+const express = require('express');
+const path = require('path');
 
-const Blog = require("./models/blog")
+const Blog = require("./models/blog");
 const userRoute = require("./routes/user");
 const blogRoute = require("./routes/blog");
+
 const app = express();
 const PORT = 8000;
 const mongoose = require("mongoose");
 const cookieParser = require("cookie-parser");
 const { checkForAuthenticationCookie } = require('./middlewares/authentication');
 
-mongoose.connect("mongodb://localhost:27017/blogify").then((e) => console.log("mongoDB connected"))
+mongoose.connect("mongodb://localhost:27017/blogify").then((e) => console.log("mongoDB connected"));
 
+app.set("view engine", "ejs");
+app.set("views", path.resolve("./views"));
 
-app.set("view engine","ejs");
-app.set("views",path.resolve("./views"))
-
-app.use(express.urlencoded({extended:false}));
+app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(checkForAuthenticationCookie("token"))
-app.use(express.static(path.resolve('./public')))
+app.use(express.static(path.resolve('./public')));
 
-app.get("/",async(req,res) =>{
+// AUTHENTICATION MIDDLEWARE
+app.use(checkForAuthenticationCookie("token"));
+
+app.use((req, res, next) => {
+    res.locals.user = req.user;
+    next();
+});
+
+// ROUTES
+app.get("/", async (req, res) => {
     const allBlog = await Blog.find({});
- res.render("home",{
-    user: req.user,
-    blogs:allBlog,
- });
-})
+   
+    res.render("home", {
+        blogs: allBlog,
+    });
+});
 
 app.use("/user", userRoute);
 app.use("/blog", blogRoute);
-app.listen(PORT,()=>console.log(`Server Started at PORT${PORT}`))
+
+app.listen(PORT, () => console.log(`Server Started at PORT ${PORT}`));
