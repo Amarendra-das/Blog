@@ -60,4 +60,10 @@ router.post("/comment/:blogId", async (req, res) => {
     return res.redirect(`/blog/${req.params.blogId}`);
 });
 
+
+router.post("/delete/:id", async (req, res) => {
+    await Blog.findByIdAndDelete(req.params.id);
+    return res.redirect("/blog");
+});
+
 module.exports = router;
