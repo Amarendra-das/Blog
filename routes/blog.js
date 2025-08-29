@@ -18,7 +18,6 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-// ✅ ADD THIS ROUTE HANDLER
 router.get("/", async (req, res) => {
     const allBlogs = await Blog.find({});
     return res.render("home", {
@@ -58,6 +57,24 @@ router.post("/comment/:blogId", async (req, res) => {
         createdBy: req.user._id,
     });
     return res.redirect(`/blog/${req.params.blogId}`);
+});
+
+// ✅ ADD THESE TWO ROUTES FOR EDITING
+// This route shows the edit form
+router.get("/edit/:id", async (req, res) => {
+    const blog = await Blog.findById(req.params.id);
+    return res.render("editBlog", {
+        blog,
+    });
+});
+
+// This route handles the update
+router.post("/edit/:id", async (req, res) => {
+    await Blog.findByIdAndUpdate(req.params.id, {
+        title: req.body.title,
+        body: req.body.body,
+    });
+    return res.redirect(`/blog/${req.params.id}`);
 });
 
 
