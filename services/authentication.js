@@ -1,23 +1,34 @@
+
+
 const JWT = require("jsonwebtoken");
 
 const secret = "$uperMan@123";
 
-function createTokenForUser(user){
-    const payload ={
+function createTokenForUser(user) {
+    const payload = {
         _id: user._id,
         email: user.email,
-        profileImageURL: user.profileImageURL,
-        role:user.role,
+        profileImageURL: user.ProfileImageURL, 
+        role: user.role,
+        fullName: user.fullName, 
     };
-    const token = JWT.sign(payload,secret);
+    const token = JWT.sign(payload, secret);
     return token;
 }
 
-function validateToken(token){
-    const payload =JWT.verify(token,secret);
-    return payload;
+function validateToken(token) {
+    if (!token) return null;
+    
+    
+    try {
+        return JWT.verify(token, secret);
+    } catch (error) {
+    
+        return null;
+    }
 }
-module.exports ={
+
+module.exports = {
     createTokenForUser,
     validateToken,
-}
+};

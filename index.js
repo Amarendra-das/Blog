@@ -4,6 +4,7 @@ const path = require('path');
 const Blog = require("./models/blog");
 const userRoute = require("./routes/user");
 const blogRoute = require("./routes/blog");
+const profileRoute = require("./routes/profile");
 
 const app = express();
 const PORT = 8000;
@@ -16,28 +17,47 @@ mongoose.connect("mongodb://localhost:27017/blogify").then((e) => console.log("m
 app.set("view engine", "ejs");
 app.set("views", path.resolve("./views"));
 
+
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
+app.use(cookieParser()); 
 app.use(express.static(path.resolve('./public')));
 
-// AUTHENTICATION MIDDLEWARE
+
 app.use(checkForAuthenticationCookie("token"));
+
 
 app.use((req, res, next) => {
     res.locals.user = req.user;
     next();
 });
 
-// ROUTES
+
+
+
 app.get("/", async (req, res) => {
-    const allBlog = await Blog.find({});
+    const page = Number(req.query.page) || 1;
+    const limit = 9; 
+    const skip = (page - 1) * limit;
+
+    const totalBlogs = await Blog.countDocuments();
+   
+    const totalPages = Math.ceil(totalBlogs / limit);
+
+    const allBlogs = await Blog.find({})
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit);
+    
    
     res.render("home", {
-        blogs: allBlog,
+        blogs: allBlogs,
+        currentPage: page,
+        totalPages,
     });
 });
 
 app.use("/user", userRoute);
 app.use("/blog", blogRoute);
+app.use("/profile", profileRoute);
 
 app.listen(PORT, () => console.log(`Server Started at PORT ${PORT}`));
