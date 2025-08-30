@@ -15,13 +15,13 @@ router.get('/add-new', (req, res) => {
 });
 
 router.get('/edit/:id', async (req, res) => {
-    console.log("--- TRIGGERED: GET /edit/:id ROUTE ---"); 
+    
     const blog = await Blog.findById(req.params.id);
     return res.render('editBlog', { user: req.user, blog });
 });
 
 router.get('/:id', async (req, res) => {
-    console.log("--- TRIGGERED: GET /:id ROUTE ---"); 
+    
     console.log("ID Parameter received:", req.params.id); 
     const blog = await Blog.findById(req.params.id).populate('createdBy');
     const comments = await Comment.find({ blogId: req.params.id }).populate('createdBy');
