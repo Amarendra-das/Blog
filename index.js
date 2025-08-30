@@ -1,5 +1,6 @@
 const express = require('express');
 const path = require('path');
+const cloudinary = require('cloudinary').v2; // 1. ADDED THIS LINE FOR CLOUDINARY
 
 const Blog = require("./models/blog");
 const userRoute = require("./routes/user");
@@ -18,38 +19,38 @@ mongoose.connect(process.env.MONGO_URL).then((e) => console.log("mongoDB connect
 app.set("view engine", "ejs");
 app.set("views", path.resolve("./views"));
 
-
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser()); 
+app.use(cookieParser());
 app.use(express.static(path.resolve('./public')));
 
-
 app.use(checkForAuthenticationCookie("token"));
-
 
 app.use((req, res, next) => {
     res.locals.user = req.user;
     next();
 });
 
-
-
+// 2. ADDED CLOUDINARY CONFIGURATION
+// This uses your environment variables to connect to your Cloudinary account
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 app.get("/", async (req, res) => {
     const page = Number(req.query.page) || 1;
-    const limit = 9; 
+    const limit = 9;
     const skip = (page - 1) * limit;
 
     const totalBlogs = await Blog.countDocuments();
-   
     const totalPages = Math.ceil(totalBlogs / limit);
 
     const allBlogs = await Blog.find({})
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit);
-    
-   
+
     res.render("home", {
         blogs: allBlogs,
         currentPage: page,
