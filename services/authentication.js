@@ -1,7 +1,7 @@
 
 
 const JWT = require("jsonwebtoken");
-
+require('dotenv').config();
 
 const secret = process.env.JWT_SECRET;
 
@@ -13,7 +13,9 @@ function createTokenForUser(user) {
         role: user.role,
         fullName: user.fullName, 
     };
-    const token = JWT.sign(payload, secret);
+    
+    const token = JWT.sign(payload,secret);
+    
     return token;
 }
 
