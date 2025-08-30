@@ -10,43 +10,28 @@ const router = Router();
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
-
-
 router.get('/add-new', (req, res) => {
-    return res.render('addBlog', {
-        user: req.user,
-    });
+    return res.render('addBlog', { user: req.user });
 });
 
 router.get('/edit/:id', async (req, res) => {
+    console.log("--- TRIGGERED: GET /edit/:id ROUTE ---"); // LOGGING
     const blog = await Blog.findById(req.params.id);
-    return res.render('editBlog', {
-        user: req.user,
-        blog,
-    });
+    return res.render('editBlog', { user: req.user, blog });
 });
-
 
 router.get('/:id', async (req, res) => {
+    console.log("--- TRIGGERED: GET /:id ROUTE ---"); // LOGGING
+    console.log("ID Parameter received:", req.params.id); // LOGGING
     const blog = await Blog.findById(req.params.id).populate('createdBy');
     const comments = await Comment.find({ blogId: req.params.id }).populate('createdBy');
-    
-    return res.render('blog', {
-        user: req.user,
-        blog,
-        comments,
-    });
+    return res.render('blog', { user: req.user, blog, comments });
 });
-
-
 
 router.post('/', upload.single('coverImage'), async (req, res) => {
     const { title, body } = req.body;
     cloudinary.uploader.upload_stream({ resource_type: 'image' }, async (error, result) => {
-        if (error) {
-            console.error('Cloudinary upload error:', error);
-            return res.status(500).send('Error uploading image');
-        }
+        if (error) return res.status(500).send('Error uploading image');
         const blog = await Blog.create({
             body,
             title,
@@ -60,7 +45,6 @@ router.post('/', upload.single('coverImage'), async (req, res) => {
 router.post('/edit/:id', upload.single('coverImage'), async (req, res) => {
     const { title, body } = req.body;
     const updateData = { title, body };
-
     if (req.file) {
         const result = await new Promise((resolve, reject) => {
             cloudinary.uploader.upload_stream({ resource_type: 'image' }, (error, result) => {
@@ -70,7 +54,6 @@ router.post('/edit/:id', upload.single('coverImage'), async (req, res) => {
         });
         updateData.coverImageURL = result.secure_url;
     }
-
     await Blog.findByIdAndUpdate(req.params.id, updateData);
     return res.redirect(`/blog/${req.params.id}`);
 });
