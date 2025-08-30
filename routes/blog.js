@@ -67,4 +67,10 @@ router.post('/', upload.single('coverImage'), async (req, res) => {
     }).end(req.file.buffer);
 });
 
+router.post('/delete/:id', async (req, res) => {
+    
+    await Blog.findByIdAndDelete(req.params.id);
+    return res.redirect('/');
+});
+
 module.exports = router;
