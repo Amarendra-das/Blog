@@ -76,6 +76,30 @@ router.get('/edit/:id', async (req, res) => {
     });
 });
 
+// Add this missing route to routes/blog.js
+router.post('/edit/:id', upload.single('coverImage'), async (req, res) => {
+    const { title, body } = req.body;
+    const updateData = { title, body };
+
+    // Check if a new cover image was uploaded
+    if (req.file) {
+        // Upload the new image to Cloudinary
+        const result = await new Promise((resolve, reject) => {
+            cloudinary.uploader.upload_stream({ resource_type: 'image' }, (error, result) => {
+                if (error) reject(error);
+                resolve(result);
+            }).end(req.file.buffer);
+        });
+        // Add the new image URL to our update data
+        updateData.coverImageURL = result.secure_url;
+    }
+
+    // Find the blog by ID and update it with the new data
+    await Blog.findByIdAndUpdate(req.params.id, updateData);
+
+    return res.redirect(`/blog/${req.params.id}`);
+});
+
 router.delete('/delete/:id', async (req, res) => {
     
     await Blog.findByIdAndDelete(req.params.id);
