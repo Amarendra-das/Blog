@@ -67,6 +67,15 @@ router.post('/', upload.single('coverImage'), async (req, res) => {
     }).end(req.file.buffer);
 });
 
+
+router.get('/edit/:id', async (req, res) => {
+    const blog = await Blog.findById(req.params.id);
+    return res.render('editBlog', {
+        user: req.user,
+        blog,
+    });
+});
+
 router.delete('/delete/:id', async (req, res) => {
     
     await Blog.findByIdAndDelete(req.params.id);
