@@ -1,28 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-   <%- include('./partials/head') %>
-    <title>Edit Blog</title>
+    <%- include('./partials/head') %>
+    <title>Edit Blog Post</title>
 </head>
 <body>
     <%- include('./partials/nav') %>
+    <div class="container mt-4">
+        <h2>Edit Your Blog Post</h2>
+        <form action="/blog/edit/<%= blog._id %>" method="post" enctype="multipart/form-data">
+            
+            <div class="mb-3">
+                <label for="coverImage" class="form-label">Change Cover Image (Optional)</label>
+                <input type="file" class="form-control" id="coverImage" name="coverImage">
+            </div>
 
-     <div class="container mt-3">
-        <form action="/blog/edit/<%= blog._id %>" method="post">
-             <div class="mb-3">
+            <div class="mb-3">
                 <label for="title" class="form-label">Title</label>
                 <input type="text" class="form-control" id="title" name="title" value="<%= blog.title %>">
-             </div>
-             <div class="mb-3">
+            </div>
+            <div class="mb-3">
                 <label for="body" class="form-label">Body</label>
-                <textarea class="form-control" name="body" id="body" rows="10"><%= blog.body %></textarea>
-             </div>
-             <div class="mb-3">
-                <button class="btn btn-primary">Update</button>
-             </div>
+                <textarea class="form-control" id="body" name="body"><%= blog.body %></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Update Post</button>
         </form>
-     </div>
-
+    </div>
+    
     <%- include('./partials/script') %>
+
+    <script>
+      tinymce.init({
+        selector: '#body'
+      });
+    </script>
 </body>
 </html>
