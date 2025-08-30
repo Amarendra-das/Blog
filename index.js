@@ -6,6 +6,7 @@ const Blog = require("./models/blog");
 const userRoute = require("./routes/user");
 const blogRoute = require("./routes/blog");
 const profileRoute = require("./routes/profile");
+const methodOverride = require('method-override');
 
 const app = express();
 const PORT = 8000;
@@ -24,6 +25,7 @@ app.use(cookieParser());
 app.use(express.static(path.resolve('./public')));
 
 app.use(checkForAuthenticationCookie("token"));
+app.use(methodOverride('_method'));
 
 app.use((req, res, next) => {
     res.locals.user = req.user;

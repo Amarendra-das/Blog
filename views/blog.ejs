@@ -22,7 +22,8 @@
         <% if (locals.user && blog.createdBy._id.toString() === locals.user._id) { %>
             <div class="text-center mb-3">
                 <a href="/blog/edit/<%= blog._id %>" class="btn btn-sm btn-warning">Edit</a>
-                <form action="/blog/delete/<%= blog._id %>" method="POST" class="d-inline">
+                
+                <form action="/blog/delete/<%= blog._id %>?_method=DELETE" method="POST" class="d-inline">
                     <button type="submit" class="btn btn-sm btn-danger">Delete</button>
                 </form>
             </div>
